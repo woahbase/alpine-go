@@ -11,6 +11,6 @@ RUN addgroup -g ${PGID} -S alpine && \
     adduser -u ${PUID} -G alpine -h /home/alpine -D alpine
 RUN set -xe \
     && apk add --no-cache --purge -uU go go-tools \
-    rm -rf /var/cache/apk/* /tmp/*
+    && rm -rf /var/cache/apk/* /tmp/*
 # ENTRYPOINT ["/init"]
 # ENTRYPOINT ["/usr/bin/go"]
