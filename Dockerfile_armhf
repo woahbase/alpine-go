@@ -6,11 +6,12 @@ FROM ${USERNAME}/${DOCKERSRC}:${ARCH}
 #
 ARG PUID=1001
 ARG PGID=1001
+ENV GOOS=linux
 #
 RUN addgroup -g ${PGID} -S alpine && \
     adduser -u ${PUID} -G alpine -h /home/alpine -D alpine
 RUN set -xe \
-    && apk add --no-cache --purge -uU go go-tools \
+    && apk add --no-cache --purge -uU go git go-tools \
     && rm -rf /var/cache/apk/* /tmp/*
 # ENTRYPOINT ["/init"]
 # ENTRYPOINT ["/usr/bin/go"]
