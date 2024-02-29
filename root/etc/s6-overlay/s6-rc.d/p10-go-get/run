@@ -1,0 +1,34 @@
+#!/usr/bin/with-contenv bash
+set -e
+
+GOPATH="${GOPATH:-/go}";
+if [ ! -d "${GOPATH}/src" ];
+then
+    mkdir -p \
+        $GOPATH/bin \
+        $GOPATH/pkg \
+        $GOPATH/src \
+    && chown -R ${S6_USER:-alpine} ${GOPATH} \
+    && chmod -R 1777 $GOPATH;
+fi;
+
+# S6_GO_PACKAGES=""; # list of packages passed at runtime, if required
+# must be main packages else go issues warning
+if [ -n "${S6_GO_PACKAGES}" ]; then
+    cd ${GOPATH} \
+    && s6-setuidgid \
+        $(ls -ldn . | awk 'NR==1 {print $3":"$4}') \
+        go install ${S6_GO_PACKAGES};
+fi;
+
+# setup deps tree from go.mod instead
+# projectdir should be in full path and outside of $GOPATH
+if [ -z "${S6_GO_SKIP_GET}" ] \
+&& [ "${GO_PROJECTDIR}" != "${GOPATH}*" ] \
+&& [ -f "${GO_PROJECTDIR}/go.mod" ]; then
+    cd ${GO_PROJECTDIR} \
+    && s6-setuidgid \
+        $(ls -ldn . | awk 'NR==1 {print $3":"$4}') \
+        go get ./...;
+fi;
+

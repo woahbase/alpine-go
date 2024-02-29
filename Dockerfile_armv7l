@@ -6,7 +6,8 @@ FROM ${IMAGEBASE}
 #
 ENV \
     CGO_ENABLED=0 \
-    GOARCH=amd64 \
+    GOARCH=arm \
+    GOARM=7 \
     GOOS=linux \
     GOPATH=/go \
     GOTOOLCHAIN=local

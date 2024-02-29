@@ -1,17 +1,41 @@
-ARG ARCH=frommakefile
-ARG DOCKERSRC=frommakefile
-ARG USERNAME=frommakefile
+# syntax=docker/dockerfile:1
 #
-FROM ${USERNAME}/${DOCKERSRC}:${ARCH}
+ARG IMAGEBASE=frommakefile
 #
-ARG PUID=1001
-ARG PGID=1001
-ENV GOOS=linux
+FROM ${IMAGEBASE}
 #
-RUN addgroup -g ${PGID} -S alpine && \
-    adduser -u ${PUID} -G alpine -h /home/alpine -D alpine
+ENV \
+    CGO_ENABLED=0 \
+    GOARCH=arm \
+    GOARM=6 \
+    GOOS=linux \
+    GOPATH=/go \
+    GOTOOLCHAIN=local
+#
 RUN set -xe \
-    && apk add --no-cache --purge -uU libc-dev go go-doc git \
+    && (if [ ! -e /etc/nsswitch.conf ]; then echo 'hosts: files dns' > /etc/nsswitch.conf; fi) \
+    && apk add --no-cache --purge -uU \
+        ca-certificates \
+        libc-dev \
+        go \
+        go-doc \
+        git \
+    && mkdir -p \
+        $GOPATH/bin \
+        $GOPATH/pkg \
+        $GOPATH/src \
+    && chown -R ${S6_USER:-alpine} ${GOPATH} \
+    && chmod -R 1777 $GOPATH \
     && rm -rf /var/cache/apk/* /tmp/*
-# ENTRYPOINT ["/init"]
-# ENTRYPOINT ["/usr/bin/go"]
+#
+COPY root/ /
+#
+ENV \
+    GOCACHE=$GOPATH/.cache \
+    GOENV=$GOPATH/env \
+    GOMODCACHE=$GOPATH/pkg/mod \
+    PATH=$GOPATH/bin:$PATH
+#
+ENTRYPOINT ["/usershell"]
+#
+CMD ["go", "version"]
