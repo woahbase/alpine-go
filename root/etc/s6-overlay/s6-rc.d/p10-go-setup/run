@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bash
+set -e
+
+vecho () { if [ "${S6_VERBOSITY:-1}" -gt 0 ]; then echo "[$0] $@"; fi; }
+
+GOPATH="${GOPATH:-/go}";
+if [ ! -d "${GOPATH}/src" ];
+then
+    vecho "Setting up GOPATH as $GOPATH (/bin,/pkg,/src)";
+    mkdir -p \
+        $GOPATH/bin \
+        $GOPATH/pkg \
+        $GOPATH/src \
+    && chown -R ${S6_USER:-alpine} ${GOPATH} \
+    && chmod -R 1777 $GOPATH;
+fi;

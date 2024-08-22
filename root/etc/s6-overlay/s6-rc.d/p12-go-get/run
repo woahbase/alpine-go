@@ -1,0 +1,17 @@
+#!/usr/bin/with-contenv bash
+set -e
+
+vecho () { if [ "${S6_VERBOSITY:-1}" -gt 0 ]; then echo "[$0] $@"; fi; }
+
+# setup deps tree from go.mod instead
+# projectdir should be in full path and outside of $GOPATH
+if [ -z "${S6_GO_SKIP_GET}" ] \
+&& [ "${GO_PROJECTDIR}" != "${GOPATH}*" ] \
+&& [ -f "${GO_PROJECTDIR}/go.mod" ]; then
+    vecho "Getting GO dependecies from: ${GO_PROJECTDIR}/go.mod";
+    cd ${GO_PROJECTDIR} \
+    && s6-setuidgid \
+        $(ls -ldn . | awk 'NR==1 {print $3":"$4}') \
+        go get ./...;
+fi;
+
