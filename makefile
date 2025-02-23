@@ -96,6 +96,7 @@ OTHERFLAGS := \
 	-e PUID=$(PUID) \
 	# -e S6_GO_PACKAGES=golang.org/x/tools/gopls@latest \
 	# -e GO_PROJECTDIR=/project \
+	# -e S6_GO_SKIP_SETUP=1 \
 	# -e S6_GO_SKIP_GET=1 \
 	# -e TZ=Asia/Kolkata \
 	#

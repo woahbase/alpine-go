@@ -3,11 +3,16 @@ set -e
 
 vecho () { if [ "${S6_VERBOSITY:-1}" -gt 0 ]; then echo "[$0] $@"; fi; }
 
-# setup deps tree from go.mod instead
+GOPATH="${GOPATH:-/go}";
+# GO_PROJECTDIR="${GO_PROJECTDIR:-/project}";
 # projectdir should be in full path and outside of $GOPATH
+
+# setup deps tree from go.mod
 if [ -z "${S6_GO_SKIP_GET}" ] \
+&& [ -n "${GO_PROJECTDIR}" ] \
 && [ "${GO_PROJECTDIR}" != "${GOPATH}*" ] \
-&& [ -f "${GO_PROJECTDIR}/go.mod" ]; then
+&& [ -f "${GO_PROJECTDIR}/go.mod" ];
+then
     vecho "Getting GO dependecies from: ${GO_PROJECTDIR}/go.mod";
     cd ${GO_PROJECTDIR} \
     && s6-setuidgid \

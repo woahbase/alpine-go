@@ -3,9 +3,12 @@ set -e
 
 vecho () { if [ "${S6_VERBOSITY:-1}" -gt 0 ]; then echo "[$0] $@"; fi; }
 
+GOPATH="${GOPATH:-/go}";
 # S6_GO_PACKAGES=""; # list of packages passed at runtime, if required
+
 # must be main packages else go issues warning
-if [ -n "${S6_GO_PACKAGES}" ]; then
+if [ -n "${S6_GO_PACKAGES}" ];
+then
     vecho "Installing GO packages: ${S6_GO_PACKAGES}";
     cd ${GOPATH} \
     && s6-setuidgid \
