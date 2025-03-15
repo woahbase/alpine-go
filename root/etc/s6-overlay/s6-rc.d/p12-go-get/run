@@ -7,11 +7,12 @@ GOPATH="${GOPATH:-/go}";
 # GO_PROJECTDIR="${GO_PROJECTDIR:-/project}";
 # projectdir should be in full path and outside of $GOPATH
 
-# setup deps tree from go.mod
+# setup deps tree from go.mod/go.sum
 if [ -z "${S6_GO_SKIP_GET}" ] \
 && [ -n "${GO_PROJECTDIR}" ] \
 && [ "${GO_PROJECTDIR}" != "${GOPATH}*" ] \
-&& [ -f "${GO_PROJECTDIR}/go.mod" ];
+&& [ -f "${GO_PROJECTDIR}/go.mod" ] \
+|| [ -f "${GO_PROJECTDIR}/go.sum" ];
 then
     vecho "Getting GO dependecies from: ${GO_PROJECTDIR}/go.mod";
     cd ${GO_PROJECTDIR} \
