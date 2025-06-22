@@ -21,20 +21,21 @@ RUN set -xe \
         go-doc \
         git \
     && mkdir -p \
-        $GOPATH/bin \
-        $GOPATH/pkg \
-        $GOPATH/src \
+        ${GOPATH}/bin \
+        ${GOPATH}/pkg \
+        ${GOPATH}/src \
     && chown -R ${S6_USER:-alpine} ${GOPATH} \
-    && chmod -R 1777 $GOPATH \
+    && chmod -R 1777 ${GOPATH} \
     && rm -rf /var/cache/apk/* /tmp/*
 #
 COPY root/ /
 #
 ENV \
-    GOCACHE=$GOPATH/.cache \
-    GOENV=$GOPATH/env \
-    GOMODCACHE=$GOPATH/pkg/mod \
-    PATH=$GOPATH/bin:$PATH
+    GOBIN=${GOPATH}/bin \
+    GOCACHE=${GOPATH}/.cache \
+    GOENV=${GOPATH}/env \
+    GOMODCACHE=${GOPATH}/pkg/mod \
+    PATH=${GOPATH}/bin:${PATH}
 #
 ENTRYPOINT ["/usershell"]
 #

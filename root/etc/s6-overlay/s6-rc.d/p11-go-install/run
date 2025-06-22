@@ -2,6 +2,8 @@
 set -e
 
 vecho () { if [ "${S6_VERBOSITY:-1}" -gt 0 ]; then echo "[$0] $@"; fi; }
+usercmd () { if [ "X${EUID}" != "X0" ]; then $@; else s6-setuidgid $(ls -ldn . | awk 'NR==1 {print $3":"$4}') $@; fi; }
+# uses projectdir perms instead of PUID/PGID
 
 GOPATH="${GOPATH:-/go}";
 # S6_GO_PACKAGES=""; # list of packages passed at runtime, if required
@@ -11,7 +13,6 @@ if [ -n "${S6_GO_PACKAGES}" ];
 then
     vecho "Installing GO packages: ${S6_GO_PACKAGES}";
     cd ${GOPATH} \
-    && s6-setuidgid \
-        $(ls -ldn . | awk 'NR==1 {print $3":"$4}') \
+    && usercmd \
         go install ${S6_GO_PACKAGES};
 fi;
