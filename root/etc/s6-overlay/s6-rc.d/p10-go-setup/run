@@ -2,7 +2,6 @@
 set -e
 
 vecho () { if [ "${S6_VERBOSITY:-1}" -gt 0 ]; then echo "[$0] $@"; fi; }
-if [ "X${EUID}" != "X0" ]; then vecho "Skipped. Reason: no root privileges."; exit 0; fi;
 
 GOPATH="${GOPATH:-/go}";
 
@@ -11,9 +10,13 @@ if [ -z "${S6_GO_SKIP_SETUP}" ] \
 then
     vecho "Setting up GOPATH as $GOPATH (/bin,/pkg,/src)";
     mkdir -p \
-        $GOPATH/bin \
-        $GOPATH/pkg \
-        $GOPATH/src \
-    && chown -R ${S6_USER:-alpine} ${GOPATH} \
-    && chmod -R 1777 $GOPATH;
+        "${GOPATH}/bin" \
+        "${GOPATH}/pkg" \
+        "${GOPATH}/src" \
+    ;
+    if [ "X${EUID}" == "X0" ]; # requires root
+    then
+        chown -R ${S6_USER:-alpine} "${GOPATH}";
+        chmod -R 1777 "${GOPATH}";
+    fi;
 fi;
